@@ -1,0 +1,25 @@
+#calculator, .digits-div, .digits-row, .digits-zero-row {
+    display: flex;
+}
+
+#calculator {
+    justify-content: center;
+}
+
+.digits-div { 
+    flex-direction: column;
+}
+
+.digits-row, .digits-zero-row {
+    flex-direction: column;
+}
+
+.digits-zero-row {
+    align-self: flex-start;
+}
+
+.digit {
+    width: 100px;
+    height: 100px;
+    font-size: 30px;
+}
