@@ -1,7 +1,11 @@
 // --- Utility functions ---
 
+function containsNonDigits(str) {
+    const regex = /\D/;
+    return regex.test(str);
+}
 
-// Math Operators 
+// Basic Math Operators
 
 function calculateSum(a, b) {
     return a + b;
@@ -17,12 +21,43 @@ function calculateProd(a, b) {
 
 function calculateDivision(a, b) {
     if (b == 0) {
-        return "Division by 0";
+        return "Division Error";
     }
     return a / b;
 }
 
-// Calculator operations
+// operate() to operate an expression with an expression between two numbers
+function operate(num1, num2, op) {
+
+    num1 = parseInt(num1);
+    num2 = parseInt(num2);
+
+    if (op == "+") {
+        return calculateSum(num1, num2);
+    } else if (op == "-") {
+        return calculateDiff(num1, num2);
+    } else if (op == "×") {
+        return calculateProd(num1, num2);
+    } else if (op == "÷") {
+        return calculateDivision(num1, num2);
+    } else {
+        return "Invalid operator";
+    }
+}
+
+// Calculator Error 
+
+function showError () {
+    num1 = 0;
+    num2 = 0;
+    op = "";
+    display.value = "";
+
+    alert("Error");
+    return;
+}
+
+// -- Calculator operations -- 
 
 // Operations will consist of a number, an operator, and another number.
 // For example: "3 + 5"
@@ -31,36 +66,18 @@ let num1 = 0;
 let num2 = 0;
 let op = "";
 
-function operate(num1, num2, op) {
-
-    if (op == "+") {
-        return calculateSum(num1, num2);
-    } else if (op == "-") {
-        return calculateDiff(num1, num2);
-    } else if (op == "*") {
-        return calculateProd(num1, num2);
-    } else if (op == "/") {
-        return calculateDivision(num1, num2);
-    } else {
-        return "Invalid operator";
-    }
-}
-
 
 // --- DOM References ---
 
 const calculator = document.querySelector("#calculator");
 
+const display = document.querySelector(".display");
+display.focus();
 
 // --- Functions ---
 
 // Creating calculator buttons
 function createCalcDigits() {
-
-    // Calculator Display
-    const display = document.querySelector(".display");
-    display.textContent = "test";
-    display.focus();
 
     const digitsDiv = document.querySelector(".digits-div");
     // Creating calculator digit buttons (1-9)
@@ -92,7 +109,15 @@ function createCalcDigits() {
         }
 
         operator.addEventListener("click", (event) => {
+            exp = display.value;
             const value = event.target.textContent;
+
+            // If an operation already exists before the new operator,
+            // run operateCalculator() on the expression and store that into num1
+            if (containsNonDigits(exp)) {
+                let res = operateCalculator(exp);
+                display.value = `${res}`;
+            }
             display.value += ` ${value} `;
         })
 
@@ -119,7 +144,29 @@ function createCalcDigits() {
     clearBtn.textContent = "clear";
 
     clearBtn.addEventListener("click", () => {
+        num1 = 0;
+        num2 = 0;
+        op = "";
         display.value = "";
+    })
+
+    
+    // Creating Division button
+    const divBtn = document.createElement("button");
+    divBtn.classList.add("div-btn");
+    divBtn.textContent = "÷";
+
+    divBtn.addEventListener("click", (event) => {
+        exp = display.value;
+        const value = event.target.textContent;
+
+        // If an operation already exists before the new operator,
+        // run operateCalculator() on the expression and store that into num1
+        if (containsNonDigits(exp)) {
+            let res = operateCalculator(exp);
+            display.value = `${res}`;
+        }
+        display.value += ` ${value} `;
     })
 
     // Creating Equals button
@@ -127,18 +174,12 @@ function createCalcDigits() {
     equalsBtn.classList.add("equal-btn");
     equalsBtn.textContent = "=";
 
-    // TODO: Equals button should display the correct calculator operation
-    // Write 
-
-    // Creating Division button
-    const divBtn = document.createElement("button");
-    divBtn.classList.add("div-btn");
-    divBtn.textContent = "÷";
-
-    divBtn.addEventListener("click", (event) => {
-        const value = event.target.textContent;
-        display.value += ` ${value} `;
+    equalsBtn.addEventListener("click", () => {
+        let exp = display.value;
+        let res = operateCalculator(exp);
+        display.value = res;
     })
+
     
 
 
@@ -147,17 +188,60 @@ function createCalcDigits() {
     digitLastRow.appendChild(equalsBtn);
     digitLastRow.appendChild(divBtn);
     digitsDiv.appendChild(digitLastRow);
-
 }
 
-// Creating calculator button (0
-// Create calculator display
-// Create clear button
-// (have these two be in the same row)
+// Calculator logic
+function operateCalculator(displayStr) {
 
+    // !! Not used for testing
+    // Validate calculator state before computing
+    /*
+    if (op === "" || display.value === "") {
+        showError();
+    }
+    */
 
-// testing
-console.log(operate(1, 3, "/"));
-console.log(operate(1, 0, "/"));
+    values = displayStr.split(" ");
+
+    // return current display if there are no operations
+    if (values.length == 1) {
+        return displayStr;
+    } 
+
+    num1 = values[0];
+    op = values[1];
+    num2 = values[2];
+
+    // PRINT TEST
+    console.log(`num1: ${num1} \nnum2: ${num2} \nop: ${op}`);
+
+    result = operate(num1, num2, op);
+    // If result is dividing 0, alert Error
+    if (result == "Division Error") {
+        alert("Error: Division by 0");
+        num1 = 0;
+        num2 = 0;
+        op = "";
+        display.value = "";
+        return;
+    }
+
+    // return current number if user inputs consecutive operations
+    if (Number.isNaN(result)) {
+        return num1;
+    }
+ 
+    // Rounding number to 3 decimal places
+    let roundedString = result.toFixed(3);
+
+    // Store result in num1 for chaining result with more operations
+    num1 = parseFloat(roundedString);
+
+    return num1;
+}
+
+// Creating All Calculator Elements
 createCalcDigits();
 
+// testing
+console.log(operateCalculator("10 + 23"));
