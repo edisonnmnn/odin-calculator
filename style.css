@@ -1,24 +1,37 @@
-#calculator, .digits-div, .digits-row, .digits-zero-row {
+#calculator, .display, .digits-div, .digits-row, .digits-last-row {
     display: flex;
 }
 
 #calculator {
     justify-content: center;
+    padding: 100px;
 }
+
 
 .digits-div { 
+    width: 400px;
     flex-direction: column;
 }
 
-.digits-row, .digits-zero-row {
+.display {
+    font-size: 30px;
+    border: 1px solid black;
+    height: 100px;
+    font-size: 40px;
+    justify-content: center; /* horizontal */
+    align-items: center;     /* vertical */
+    overflow: hidden;
+}
+
+.digits-row, .digits-last-row {
     flex-direction: column;
 }
 
-.digits-zero-row {
+.digits-last-row {
     align-self: flex-start;
 }
 
-.digit {
+.digit, .operator, .clear-btn, .equal-btn, .div-btn {
     width: 100px;
     height: 100px;
     font-size: 30px;
